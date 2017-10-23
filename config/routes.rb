@@ -9,4 +9,6 @@ Rails.application.routes.draw do
     get "page/edit", to: "pages#edit"
     post "page", to: "pages#update"
   end
+
+  get "pad1", to: "basic#pad1"
 end

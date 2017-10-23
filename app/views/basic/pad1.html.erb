@@ -1,0 +1,128 @@
+<style>
+  body {
+
+  }
+
+  table {
+    width: 100%;
+    height: 100px;
+  }
+
+  .shaded {
+    background-color: #eee;
+  }
+
+  .active {
+    background-color: yellow;
+  }
+
+  .cued.active {
+    background-color: #ffcc00;
+  }
+
+  .cued {
+    background-color: orange;
+  }
+</style>
+
+<div class="container">
+  <table border=1>
+    <% 1.times do |bar| %>
+      <tr>
+        <% 16.times do |beat| %>
+          <td class="pad1 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="container">
+  <table border=1>
+    <% 1.times do |bar| %>
+      <tr>
+        <% 16.times do |beat| %>
+          <td class="pad2 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="container">
+  <table border=1>
+    <% 1.times do |bar| %>
+      <tr>
+        <% 16.times do |beat| %>
+          <td class="pad3 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="container">
+  <table border=1>
+    <% 1.times do |bar| %>
+      <tr>
+        <% 16.times do |beat| %>
+          <td class="pad4 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="howler.js"></script>
+<script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.1.2.min.js"></script>
+
+<script>
+
+  function play_namespaced_pad(s, namespace) {
+    var tds = $("td." + namespace);
+    var active_index = tds.index($(".active."+namespace));
+    var active = tds[active_index];
+    $(active).toggleClass("active");
+    if (active_index == tds.length-1) { 
+      active_index = -1; 
+    };
+    var next_index = active_index+1;
+    var next_active = tds[next_index];
+    $(next_active).toggleClass("active");
+
+    if ($(".active.cued."+namespace).length > 0) {
+      s.play();
+    }
+  }
+  
+  $(function() {
+    var sound1 = new Howl({
+      src: ['kick1.mp3']
+    })
+
+    var sound2 = new Howl({
+      src: ['snare1.mp3']
+    })
+
+    var sound3 = new Howl({
+      src: ['hihat1.mp3']
+    })
+
+    var sound4 = new Howl({
+      src: ['openhihat1.mp3']
+    })
+
+    setInterval(function() {
+      play_namespaced_pad(sound1, "pad1");
+      play_namespaced_pad(sound2, "pad2");
+      play_namespaced_pad(sound3, "pad3");
+      play_namespaced_pad(sound4, "pad4");
+    }, ((60/80)*(1000/4)))
+
+    $("td").click(function(e) {
+      $(e.target).toggleClass("cued")
+    });
+  });
+
+</script>

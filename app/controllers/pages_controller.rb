@@ -10,6 +10,10 @@ class PagesController < ApplicationController
   def update
     @page = Page.find_by(title: params[:title]) || Page.new(title: params[:title])
     @page.content = params[:page][:content]
+    if @page.content.blank?
+      @page.destroy
+      return redirect_to title_path_to(@page)
+    end
     if @page.save
       redirect_to title_path_to(@page)
     else
