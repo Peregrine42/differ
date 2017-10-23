@@ -1,15 +1,69 @@
 <style>
   body {
-
+    background-color: #333;
   }
 
   table {
     width: 100%;
     height: 100px;
+    border-collapse: separate;
+    border-spacing: 10px;
+    *border-collapse: expression('separate', cellSpacing = '10px');
+  }
+
+.flipswitch
+{
+    position: relative;
+    width: 200px;
+    height: 75px;
+    background-color: #555;
+    -webkit-appearance: initial;
+    border-radius: 5px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    outline:none;
+    font-size: 20px;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
+    cursor:pointer;
+    margin-left: 10px;
+    float: right;
+}
+.flipswitch:after
+{
+    position:absolute;
+    top:5%;
+    display:block; 
+    line-height:32px;
+    width:45%;
+    height:90%;
+    background:#ffcc00;
+    box-sizing:border-box;
+    text-align:center;
+    transition: all 0.3s ease-in 0s; 
+    color:black;
+    border:#888 1px solid;
+    border-radius:5px;
+    padding-top: 15px;
+}
+.flipswitch:after
+{
+    left:2%;
+    content: "Play";
+}
+.flipswitch:checked:after
+{
+    left:53%;
+    content: "Pause";  
+}
+
+
+  td {
+    background-color: #777;
+    border-radius: 5px;
   }
 
   .shaded {
-    background-color: #eee;
+    background-color: #555;
   }
 
   .active {
@@ -23,48 +77,52 @@
   .cued {
     background-color: orange;
   }
+
+  .margin {
+    background: no-repeat;
+    background-color: #ffcc00;
+    color: #ffffff;
+  }
 </style>
 
 <div class="container">
-  <table border=1>
-    <% 1.times do |bar| %>
+  <table >
       <tr>
+        <td class="margin sound1" style="background-position: left 0px top 4px; background-image: url('kick.png'); background-size:contain;"> </td>
         <% 16.times do |beat| %>
-          <td class="pad1 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+          <td class="pad1 <%= "active" if beat == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
         <% end %>
       </tr>
-    <% end %>
   </table>
 </div>
 
 <div class="container">
-  <table border=1>
-    <% 1.times do |bar| %>
+  <table >
       <tr>
+        <td class="margin sound2" style="background-image: url('snare.png'); background-size:contain;"> </td>
         <% 16.times do |beat| %>
-          <td class="pad2 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+          <td class="pad2 <%= "active" if beat == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
         <% end %>
       </tr>
-    <% end %>
   </table>
 </div>
 
 <div class="container">
-  <table border=1>
-    <% 1.times do |bar| %>
+  <table >
       <tr>
+        <td class="margin sound3" style="background-image: url('hihat.png'); background-size:contain;"> </td>
         <% 16.times do |beat| %>
-          <td class="pad3 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
+          <td class="pad3 <%= "active" if beat == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
         <% end %>
       </tr>
-    <% end %>
   </table>
 </div>
 
 <div class="container">
-  <table border=1>
+  <table >
     <% 1.times do |bar| %>
       <tr>
+        <td class="margin sound4" style="background-image: url('hihatopen.png'); background-size:contain;"> </td>
         <% 16.times do |beat| %>
           <td class="pad4 <%= "active" if beat == 0 && bar == 0 %> <%= "shaded" if beat % 2 == 1 %>"></td>
         <% end %>
@@ -73,6 +131,8 @@
   </table>
 </div>
 
+<input type="checkbox" class="flipswitch" id="play"></input>
+
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="howler.js"></script>
 <script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.1.2.min.js"></script>
@@ -80,48 +140,56 @@
 <script>
 
   function play_namespaced_pad(s, namespace) {
-    var tds = $("td." + namespace);
-    var active_index = tds.index($(".active."+namespace));
-    var active = tds[active_index];
-    $(active).toggleClass("active");
-    if (active_index == tds.length-1) { 
-      active_index = -1; 
-    };
-    var next_index = active_index+1;
-    var next_active = tds[next_index];
-    $(next_active).toggleClass("active");
+    if ($("#play:checked").length > 0) {
+      var tds = $("td." + namespace);
+      var active_index = tds.index($(".active."+namespace));
+      var active = tds[active_index];
+      $(active).toggleClass("active");
+      if (active_index == tds.length-1) { 
+        active_index = -1; 
+      };
+      var next_index = active_index+1;
+      var next_active = tds[next_index];
+      $(next_active).toggleClass("active");
 
-    if ($(".active.cued."+namespace).length > 0) {
-      s.play();
+      if ($(".active.cued."+namespace).length > 0) {
+        s.play();
+      }
     }
   }
   
   $(function() {
-    var sound1 = new Howl({
+    sounds = {};
+    sounds.sound1 = new Howl({
       src: ['kick1.mp3']
     })
 
-    var sound2 = new Howl({
+    sounds.sound2 = new Howl({
       src: ['snare1.mp3']
     })
 
-    var sound3 = new Howl({
+    sounds.sound3 = new Howl({
       src: ['hihat1.mp3']
     })
 
-    var sound4 = new Howl({
+    sounds.sound4 = new Howl({
       src: ['openhihat1.mp3']
     })
 
     setInterval(function() {
-      play_namespaced_pad(sound1, "pad1");
-      play_namespaced_pad(sound2, "pad2");
-      play_namespaced_pad(sound3, "pad3");
-      play_namespaced_pad(sound4, "pad4");
+      play_namespaced_pad(sounds.sound1, "pad1");
+      play_namespaced_pad(sounds.sound2, "pad2");
+      play_namespaced_pad(sounds.sound3, "pad3");
+      play_namespaced_pad(sounds.sound4, "pad4");
     }, ((60/80)*(1000/4)))
 
     $("td").click(function(e) {
       $(e.target).toggleClass("cued")
+    });
+
+    $(".margin").click(function(e) {
+      var index = $(e.target).attr("class").match(/\d+/)[0];
+      sounds["sound"+index].play();
     });
   });
 
